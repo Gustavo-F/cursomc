@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 import com.gustavo.cursomc.domain.Categoria;
+import com.gustavo.cursomc.dto.CategoriaDTO;
 import com.gustavo.cursomc.services.CategoriaService;
 
 @RestController
@@ -24,6 +26,14 @@ public class CategoriaResource {
 	@Autowired
 	private CategoriaService categoriaService;
 	
+	@GetMapping
+	public ResponseEntity<List<CategoriaDTO>> findAll() {
+		List<Categoria> categorias = categoriaService.findAll();
+		List<CategoriaDTO> listDto = categorias.stream().map(c -> new CategoriaDTO(c)).toList();
+
+		return ResponseEntity.ok().body(listDto);
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<Categoria> find(@PathVariable("id") Integer id) {
 		Categoria categoria = categoriaService.find(id);
