@@ -38,7 +38,6 @@ public class CategoriaResource {
 		return ResponseEntity.ok().body(listDto);
 	}
 	
-
 	@GetMapping(value = "/page")
 	public ResponseEntity<Page<CategoriaDTO>> findPage(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
