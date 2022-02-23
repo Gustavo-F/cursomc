@@ -3,9 +3,15 @@ package com.gustavo.cursomc.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.gustavo.cursomc.domain.Cidade;
 import com.gustavo.cursomc.domain.Cliente;
+import com.gustavo.cursomc.domain.Endereco;
+import com.gustavo.cursomc.domain.enums.TipoCliente;
 import com.gustavo.cursomc.dto.ClienteDTO;
+import com.gustavo.cursomc.dto.ClienteNewDTO;
+import com.gustavo.cursomc.repositories.CidadeRepository;
 import com.gustavo.cursomc.repositories.ClienteRepository;
+import com.gustavo.cursomc.repositories.EnderecoRepository;
 import com.gustavo.cursomc.services.exceptions.DataIntegrityException;
 import com.gustavo.cursomc.services.exceptions.ObjectNotFoundException;
 
@@ -23,6 +29,9 @@ public class ClienteService {
     @Autowired
     private ClienteRepository repo;
 
+	@Autowired
+	private EnderecoRepository enderecoRepository;
+
 	public List<Cliente> findAll() {
 		return repo.findAll();
 	}
@@ -39,6 +48,15 @@ public class ClienteService {
     	PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
     	return repo.findAll(pageRequest);
     }
+
+	public Cliente insert(Cliente cliente) {
+		cliente.setId(null);
+		
+		cliente = repo.save(cliente);
+		enderecoRepository.saveAll(cliente.getEnderecos());
+
+		return repo.save(cliente);
+	}
 
 	public Cliente update(Cliente cliente) {
         Cliente newCliente = find(cliente.getId());
@@ -60,6 +78,27 @@ public class ClienteService {
     
     public Cliente fromDTO(ClienteDTO clienteDTO) {
     	return new Cliente(clienteDTO.getId(), clienteDTO.getNome(), clienteDTO.getEmail(), null, null);
+    }
+    
+    public Cliente fromDTO(ClienteNewDTO clienteDTO) {
+    	Cliente cliente = new Cliente(
+			null, clienteDTO.getNome(), clienteDTO.getEmail(), clienteDTO.getCpfOuCnpj(), TipoCliente.toEnum(clienteDTO.getTipo()));
+
+		Cidade cidade = new Cidade(clienteDTO.getCidadeId(), null, null);
+		Endereco endereco = new Endereco(
+			null, clienteDTO.getLogradouro(), clienteDTO.getNumero(), clienteDTO.getComplemento(),
+			clienteDTO.getBairro(), clienteDTO.getCep(), cliente, cidade);
+
+		cliente.getEnderecos().add(endereco);
+		cliente.getTelefones().add(clienteDTO.getTelefone1());
+		
+		if (clienteDTO.getTelefone2() != null) 
+			cliente.getTelefones().add(clienteDTO.getTelefone2());
+		
+		if (clienteDTO.getTelefone3() != null)
+			cliente.getTelefones().add(clienteDTO.getTelefone3());
+
+		return cliente;
     }
 
 	private void updateData(Cliente newCliente, Cliente cliente) {

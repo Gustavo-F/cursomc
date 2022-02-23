@@ -1,11 +1,13 @@
 package com.gustavo.cursomc.resources;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import com.gustavo.cursomc.domain.Cliente;
 import com.gustavo.cursomc.dto.ClienteDTO;
+import com.gustavo.cursomc.dto.ClienteNewDTO;
 import com.gustavo.cursomc.services.ClienteService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -52,6 +56,17 @@ public class ClienteResource {
 		Page<ClienteDTO> categoriasDTO = categorias.map(c -> new ClienteDTO(c));
 		
 		return ResponseEntity.ok().body(categoriasDTO);
+	}
+
+	@PostMapping
+	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteNewDTO clienteDto) {
+		Cliente cliente = clienteService.fromDTO(clienteDto);
+		cliente = clienteService.insert(cliente);
+
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+			.path("/{id}").buildAndExpand(cliente.getId()).toUri();
+
+		return ResponseEntity.created(uri).build();
 	}
 
 	@PutMapping(value = "/{id}")
