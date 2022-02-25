@@ -22,75 +22,51 @@ public class CategoriaService {
 
 	@Autowired
 	private CategoriaRepository repo;
-	
+
 	public List<Categoria> findAll() {
-        return repo.findAll();
-    }
+		return repo.findAll();
+	}
 
 	public Categoria find(Integer id) {
 		Optional<Categoria> categoriaObj = repo.findById(id);
-		
+
 		return categoriaObj.orElseThrow(() -> new ObjectNotFoundException(
-			"Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName()
-		));
+				"Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName()));
 	}
 
-    public Categoria insert(Categoria categoria) {
-        categoria.setId(null);
+	public Categoria insert(Categoria categoria) {
+		categoria.setId(null);
 		return repo.save(categoria);
-    }
+	}
 
 	public Categoria update(Categoria categoria) {
-        Categoria newCategoria = find(categoria.getId());
+		Categoria newCategoria = find(categoria.getId());
 		updateData(newCategoria, categoria);
-		
-		return repo.save(newCategoria);
-    }
 
-    public void delete(Integer id) {
+		return repo.save(newCategoria);
+	}
+
+	public void delete(Integer id) {
 		try {
 			repo.deleteById(id);
 		} catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos.");
 		} catch (EmptyResultDataAccessException e) {
 			throw new ObjectNotFoundException(
-				"Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName());
+					"Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName());
 		}
-    }
-    
-    public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
-    	PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
-    	return repo.findAll(pageRequest);
-    }
-    
-    public Categoria fromDTO(CategoriaDTO categoriaDTO) {
-    	return new Categoria(categoriaDTO.getId(), categoriaDTO.getNome());	
-    }
+	}
+
+	public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		return repo.findAll(pageRequest);
+	}
+
+	public Categoria fromDTO(CategoriaDTO categoriaDTO) {
+		return new Categoria(categoriaDTO.getId(), categoriaDTO.getNome());
+	}
 
 	private void updateData(Categoria newCategoria, Categoria categoria) {
 		newCategoria.setNome(categoria.getNome());
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
