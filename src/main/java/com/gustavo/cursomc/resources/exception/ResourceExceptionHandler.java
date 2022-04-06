@@ -2,6 +2,7 @@ package com.gustavo.cursomc.resources.exception;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gustavo.cursomc.services.exceptions.AuthorizationException;
 import com.gustavo.cursomc.services.exceptions.DataIntegrityException;
 import com.gustavo.cursomc.services.exceptions.ObjectNotFoundException;
 
@@ -37,4 +38,10 @@ public class ResourceExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<StandardError> authorization(AuthorizationException e, HttpServletRequest request) {
+        StandardError error = new StandardError(HttpStatus.FORBIDDEN.value(), e.getMessage(), System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }  
 }
