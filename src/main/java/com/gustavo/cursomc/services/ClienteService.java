@@ -3,6 +3,7 @@ package com.gustavo.cursomc.services;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.awt.image.BufferedImage;
 
 import com.gustavo.cursomc.domain.Cidade;
 import com.gustavo.cursomc.domain.Cliente;
@@ -19,6 +20,7 @@ import com.gustavo.cursomc.services.exceptions.DataIntegrityException;
 import com.gustavo.cursomc.services.exceptions.ObjectNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -42,6 +44,12 @@ public class ClienteService {
 
 	@Autowired
 	private S3Service s3Service;
+
+	@Autowired
+	private ImageService imageService;
+
+	@Value("${img.prefix.client.profile}")
+	private String prefix;
 
 	public List<Cliente> findAll() {
 		return repo.findAll();
@@ -131,12 +139,9 @@ public class ClienteService {
 		if (user == null)
 			throw new AuthorizationException("Acesso negado");
 
-		URI uri = s3Service.uploadFile(multipartFile);
-		Cliente cliente = repo.findById(user.getId()).get();
+		BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+		String fileName = (prefix + user.getId() + ".jpg"); 
 
-		cliente.setImageUrl(uri.toString());
-		repo.save(cliente);
-
-		return uri;
+		return s3Service.uploadFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image");
 	}
 }
