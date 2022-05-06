@@ -13,7 +13,6 @@ import com.gustavo.cursomc.services.exceptions.FileException;
 
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

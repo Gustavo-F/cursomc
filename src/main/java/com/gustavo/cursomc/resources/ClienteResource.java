@@ -39,6 +39,12 @@ public class ClienteResource {
 		return ResponseEntity.ok().body(cliente);
     }
 
+	@GetMapping(value = "/email")
+	public ResponseEntity<Cliente> findByEmail(@RequestParam(value = "value") String email) {
+		Cliente cliente = clienteService.findByEmail(email);
+		return ResponseEntity.ok().body(cliente);
+	}
+
     @GetMapping
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<List<ClienteDTO>> findAll() {
@@ -47,7 +53,7 @@ public class ClienteResource {
 
 		return ResponseEntity.ok().body(listDto);
 	}
-	
+
 	@GetMapping(value = "/page")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<Page<ClienteDTO>> findPage(
