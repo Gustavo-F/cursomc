@@ -1,22 +1,15 @@
 package com.gustavo.cursomc.services;
 
-import javax.mail.internet.MimeMessage;
+import org.springframework.mail.SimpleMailMessage;
 
 import com.gustavo.cursomc.domain.Cliente;
 import com.gustavo.cursomc.domain.Pedido;
 
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.stereotype.Service;
-
-@Service
 public interface EmailService {
-    public void sendOrderConfirmationEmail(Pedido pedido);
 
-    public void sendEmail(SimpleMailMessage msg);
-
-    public void sendOrderConfirmationHtmlEmail(Pedido pedido);
-
-    public void sendHtmlEmail(MimeMessage message);
-
-    public void sendNewPasswordEmail(Cliente cliente, String password);
+	void sendOrderConfirmationEmail(Pedido obj);
+	
+	void sendEmail(SimpleMailMessage msg);
+	
+	void sendNewPasswordEmail(Cliente cliente, String newPass);
 }
