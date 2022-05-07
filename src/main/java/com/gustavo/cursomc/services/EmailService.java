@@ -6,7 +6,9 @@ import com.gustavo.cursomc.domain.Cliente;
 import com.gustavo.cursomc.domain.Pedido;
 
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface EmailService {
     public void sendOrderConfirmationEmail(Pedido pedido);
 
