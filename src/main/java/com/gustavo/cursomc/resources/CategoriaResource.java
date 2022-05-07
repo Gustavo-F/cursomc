@@ -2,8 +2,13 @@ package com.gustavo.cursomc.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
+
+import com.gustavo.cursomc.domain.Categoria;
+import com.gustavo.cursomc.dto.CategoriaDTO;
+import com.gustavo.cursomc.services.CategoriaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,10 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.gustavo.cursomc.domain.Categoria;
-import com.gustavo.cursomc.dto.CategoriaDTO;
-import com.gustavo.cursomc.services.CategoriaService;
-
 @RestController
 @RequestMapping(value = "/categorias")
 public class CategoriaResource {
@@ -34,7 +35,7 @@ public class CategoriaResource {
 	@GetMapping
 	public ResponseEntity<List<CategoriaDTO>> findAll() {
 		List<Categoria> categorias = categoriaService.findAll();
-		List<CategoriaDTO> listDto = categorias.stream().map(c -> new CategoriaDTO(c)).toList();
+		List<CategoriaDTO> listDto = categorias.stream().map(c -> new CategoriaDTO(c)).collect(Collectors.toList());
 
 		return ResponseEntity.ok().body(listDto);
 	}
